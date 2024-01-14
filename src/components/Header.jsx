@@ -15,8 +15,8 @@ import AdbIcon from "@mui/icons-material/Adb";
 import TextField from "@mui/material/TextField";
 
 const pages = ["Customers", "Accounts", "Operations"];
-const settings = ["Debit", "Credit", "Transfer", "Logout"];
-
+const operations = ["Debit", "Credit", "Transfer"];
+const settings = ["Profile", "Logout"];
 function Header() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -67,16 +67,6 @@ function Header() {
             Bank
           </Typography>
           <Box>
-            {/* <IconButton
-              size="large"
-              aria-label="operation"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenOpsMenu}
-              color="inherit"
-            >
-              <Typography>Operations</Typography>
-            </IconButton> */}
             <Menu
               id="menu-appbar"
               anchorEl={anchorElOps}
@@ -92,7 +82,7 @@ function Header() {
               open={Boolean(anchorElOps)}
               onClose={handleCloseOpsMenu}
             >
-              {settings.map((setting) => (
+              {operations.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseOpsMenu}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
@@ -110,38 +100,6 @@ function Header() {
             >
               <MenuIcon />
             </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem
-                  key={page}
-                  onClick={
-                    page === "Operations"
-                      ? handleOpenOpsMenu
-                      : handleCloseNavMenu
-                  }
-                  sx={{ my: 2, color: "white", display: "block" }}
-                >
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
           </Box>
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography
@@ -166,7 +124,9 @@ function Header() {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={
+                  page === "Operations" ? handleOpenOpsMenu : handleCloseNavMenu
+                }
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page}
