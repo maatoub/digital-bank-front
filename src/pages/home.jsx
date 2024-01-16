@@ -17,61 +17,105 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { deleteCustomer, getAllCustomers } from "../api/api";
 import FormNewCustomer from "../components/FormNewCustomer";
+import ConfirmationModal from "../components/ConfirmationModal";
+import Pagination from "@mui/material/Pagination";
 
 export default function Home() {
   const [data, setData] = React.useState([]);
   const [expandedRow, setExpandedRow] = React.useState(null);
-  const [modalOpen, setModelOpen] = React.useState(false);
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [customerToDelete, setCustomerToDelete] = React.useState(null);
+  const [selectedCustomer, setSelectedCustomer] = React.useState(null);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const headTitles = [
+    { id: "1", title: "Name" },
+    { id: "2", title: "Email" },
+    { id: "3", title: "Deleted" },
+    { id: "4", title: "Update" },
+  ];
+  /********    pagination    **** */
+
+  const customerPerPage = 4;
+  const totalPages = Math.ceil(data.length / customerPerPage);
+  const indexOfLastCustomer = currentPage * customerPerPage;
+  const indexOfFirstCustomer = indexOfLastCustomer - customerPerPage;
+  const currentCustomer = data.slice(indexOfFirstCustomer, indexOfLastCustomer);
+
+  /********        **** */
 
   React.useEffect(() => {
     handleAllCustomers();
-  }, [data]);
+  }, []);
 
   const handleAllCustomers = () => {
     getAllCustomers()
       .then((res) => setData(res.data))
       .catch((err) => console.log(err));
   };
+
   const handleDeleteCustomer = (id) => {
-    deleteCustomer(id)
-      .then(() => {
-        handleAllCustomers();
-      })
-      .catch((err) => console.log(err));
+    setCustomerToDelete(id);
+    setModalOpen(true);
   };
 
-  const handleUpdateCustomer = (customer) => {
-    console.log("updated");
+  const confirmDelete = () => {
+    if (customerToDelete) {
+      deleteCustomer(customerToDelete)
+        .then(() => {
+          handleAllCustomers();
+        })
+        .catch((err) => console.log(err));
+    }
+    setModalOpen(false);
+    setCustomerToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setModalOpen(false);
+    setCustomerToDelete(null);
+  };
+
+  const handleUpdateCustomer = (id) => {
+    const customerUpdate = data.find((cus) => cus.id === id);
+    setSelectedCustomer(customerUpdate);
+  };
+
+  const clearSelectedCustomer = () => {
+    setSelectedCustomer(null);
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
   const handleRowClick = (rowId) => {
     setExpandedRow(expandedRow === rowId ? null : rowId);
   };
 
   return (
-    <div className="mx-auto lg:grid lg:grid-cols-2 lg:gap-8 items-center p-12 ">
-      <div className="items-center ">
-        <TableContainer component={Paper} sx={{ bgcolor: "black" }}>
+    <div className="lg:mx-14 lg:grid lg:grid-cols-2 lg:gap-8 items-center h-screen">
+      <div>
+        <TableContainer
+          component={Paper}
+          sx={{ bgcolor: "black", maxHeight: "400px" }}
+        >
           <Table aria-label="simple table">
             <TableHead>
               <TableRow sx={{ color: "white" }}>
                 <TableCell />
                 <TableCell sx={{ color: "white" }}>Id</TableCell>
-                <TableCell align="right" sx={{ color: "white" }}>
-                  name
-                </TableCell>
-                <TableCell align="right" sx={{ color: "white" }}>
-                  Email
-                </TableCell>
-                <TableCell align="right" sx={{ color: "white" }}>
-                  Delete
-                </TableCell>
-                <TableCell align="right" sx={{ color: "white" }}>
-                  Update
-                </TableCell>
+                {headTitles.map((item) => (
+                  <TableCell
+                    key={item.id}
+                    align="right"
+                    sx={{ color: "white" }}
+                  >
+                    {item.title}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((row) => (
+              {currentCustomer.map((row) => (
                 <React.Fragment key={row.id}>
                   <TableRow
                     sx={{
@@ -108,27 +152,24 @@ export default function Home() {
                       {row.email}
                     </TableCell>
                     <TableCell align="right">
-                      <Link to={`/delete/${row.id}`}>
-                        <IconButton
-                          aria-label="delete"
-                          color="error"
-                          onClick={() => handleDeleteCustomer(row.id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Link>
+                      <IconButton
+                        aria-label="delete"
+                        color="error"
+                        onClick={() => handleDeleteCustomer(row.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
                     </TableCell>
+
                     <TableCell align="right">
-                      <Link to={`/update/${row.id}`}>
-                        <IconButton
-                          aria-label="edit"
-                          color="success"
-                          size="small"
-                          onClick={() => handleUpdateCustomer(customer)}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Link>
+                      <IconButton
+                        aria-label="edit"
+                        color="success"
+                        size="small"
+                        onClick={() => handleUpdateCustomer(row.id)}
+                      >
+                        <EditIcon />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                   {/* ***************** Row details  ************* */}
@@ -173,10 +214,27 @@ export default function Home() {
             </TableBody>
           </Table>
         </TableContainer>
+        <Pagination
+          className="p-4 flex items-center justify-center"
+          count={totalPages}
+          variant="outlined"
+          color="primary"
+          page={currentPage}
+          onChange={handlePageChange}
+        />
       </div>
-      <div className="mx-auto lg:col-span-1 lg:col-start-2 mt-32">
-        <FormNewCustomer />
+      <div className="mx-auto lg:col-span-1 lg:col-start-2">
+        <FormNewCustomer
+          onSubmitCustomer={handleAllCustomers}
+          selectedCustomer={selectedCustomer}
+          clearSelectedCustomer={clearSelectedCustomer}
+        />
       </div>
+      <ConfirmationModal
+        open={modalOpen}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }
