@@ -10,7 +10,6 @@ import Paper from "@mui/material/Paper";
 import Collapse from "@mui/material/Collapse";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -19,9 +18,11 @@ import { deleteCustomer, getAllCustomers } from "../api/api";
 import FormNewCustomer from "../components/FormNewCustomer";
 import ConfirmationModal from "../components/ConfirmationModal";
 import Pagination from "@mui/material/Pagination";
+import { detailsAccountCustomer } from "../api/apiAccounts";
 
 export default function Home() {
   const [data, setData] = React.useState([]);
+  const [details, setDetails] = React.useState([]);
   const [expandedRow, setExpandedRow] = React.useState(null);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [customerToDelete, setCustomerToDelete] = React.useState(null);
@@ -76,7 +77,7 @@ export default function Home() {
   };
 
   const handleUpdateCustomer = (id) => {
-    const customerUpdate = data.find((cus) => cus.id === id);
+    const customerUpdate = data.find((cus) => cus.customerDTO.id === id);
     setSelectedCustomer(customerUpdate);
   };
 
@@ -87,6 +88,7 @@ export default function Home() {
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
+
   const handleRowClick = (rowId) => {
     setExpandedRow(expandedRow === rowId ? null : rowId);
   };
@@ -116,7 +118,7 @@ export default function Home() {
             </TableHead>
             <TableBody>
               {currentCustomer.map((row) => (
-                <React.Fragment key={row.id}>
+                <React.Fragment key={row.customerDTO.id}>
                   <TableRow
                     sx={{
                       "&:last-child td, &:last-child th": {
@@ -129,9 +131,9 @@ export default function Home() {
                       <IconButton
                         aria-label="expand row"
                         size="small"
-                        onClick={() => handleRowClick(row.id)}
+                        onClick={() => handleRowClick(row.customerDTO.id)}
                       >
-                        {expandedRow === row.id ? (
+                        {expandedRow === row.customerDTO.id ? (
                           <KeyboardArrowUpIcon />
                         ) : (
                           <KeyboardArrowDownIcon />
@@ -143,19 +145,19 @@ export default function Home() {
                       scope="row"
                       sx={{ color: "white" }}
                     >
-                      {row.id}
+                      {row.customerDTO.id}
                     </TableCell>
                     <TableCell align="right" sx={{ color: "white" }}>
-                      {row.name}
+                      {row.customerDTO.name}
                     </TableCell>
                     <TableCell align="right" sx={{ color: "white" }}>
-                      {row.email}
+                      {row.customerDTO.email}
                     </TableCell>
                     <TableCell align="right">
                       <IconButton
                         aria-label="delete"
                         color="error"
-                        onClick={() => handleDeleteCustomer(row.id)}
+                        onClick={() => handleDeleteCustomer(row.customerDTO.id)}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -166,7 +168,7 @@ export default function Home() {
                         aria-label="edit"
                         color="success"
                         size="small"
-                        onClick={() => handleUpdateCustomer(row.id)}
+                        onClick={() => handleUpdateCustomer(row.customerDTO.id)}
                       >
                         <EditIcon />
                       </IconButton>
@@ -179,7 +181,7 @@ export default function Home() {
                       colSpan={6}
                     >
                       <Collapse
-                        in={expandedRow === row.id}
+                        in={expandedRow === row.customerDTO.id}
                         timeout="auto"
                         unmountOnExit
                       >
@@ -190,19 +192,56 @@ export default function Home() {
                           <Table size="small" aria-label="more details table">
                             <TableHead>
                               <TableRow>
-                                <TableCell>Date</TableCell>
-                                <TableCell align="right">RIB</TableCell>
-                                <TableCell align="right">Type </TableCell>
-                                <TableCell align="right">Amount</TableCell>
+                                <TableCell sx={{ color: "white" }}>
+                                  Date
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  sx={{ color: "white" }}
+                                >
+                                  RIB
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  sx={{ color: "white" }}
+                                >
+                                  Status{" "}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  sx={{ color: "white" }}
+                                >
+                                  Type
+                                </TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              <TableRow>
-                                <TableCell>Data 1</TableCell>
-                                <TableCell align="right">Data 2</TableCell>
-                                <TableCell align="right">Data 3</TableCell>
-                                <TableCell align="right">Data 4</TableCell>*
-                              </TableRow>
+                              {row.accountsDto.map((account) => (
+                                <TableRow key={account.id}>
+                                  <TableCell sx={{ color: "white" }}>
+                                    {account.createdAt}
+                                  </TableCell>
+                                  <TableCell
+                                    align="right"
+                                    sx={{ color: "white" }}
+                                  >
+                                    {account.id}
+                                  </TableCell>
+                                  <TableCell
+                                    align="right"
+                                    sx={{ color: "white" }}
+                                  >
+                                    {account.status}
+                                  </TableCell>
+                                  <TableCell
+                                    align="right"
+                                    sx={{ color: "white" }}
+                                  >
+                                    {account.type}
+                                  </TableCell>
+                                  *
+                                </TableRow>
+                              ))}
                             </TableBody>
                           </Table>
                         </Box>

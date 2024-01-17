@@ -11,8 +11,8 @@ const FormNewCustomer = ({
 
   useEffect(() => {
     if (selectedCustomer) {
-      setEmail(selectedCustomer.email);
-      setName(selectedCustomer.name);
+      setEmail(selectedCustomer.customerDTO.email);
+      setName(selectedCustomer.customerDTO.name);
     } else {
       setEmail("");
       setName("");
@@ -22,7 +22,7 @@ const FormNewCustomer = ({
     e.preventDefault();
     const customer = { name, email };
     if (selectedCustomer) {
-      updateCustomer({ ...selectedCustomer, ...customer })
+      updateCustomer({ ...selectedCustomer.customerDTO, ...customer })
         .then(() => {
           setEmail("");
           setName("");

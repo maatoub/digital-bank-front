@@ -5,7 +5,7 @@ export const api = axios.create({
 });
 
 export const getAllCustomers = () => {
-  return api.get(`/`);
+  return api.get(`/accounts`);
 };
 
 export const saveCustomer = (customer) => {
@@ -19,3 +19,4 @@ export const deleteCustomer = (id) => {
 export const updateCustomer = (customer) => {
   return api.put(`/update/${customer.id}`, customer);
 }
+
