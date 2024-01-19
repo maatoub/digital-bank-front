@@ -18,7 +18,6 @@ import { deleteCustomer, getAllCustomers } from "../api/api";
 import FormNewCustomer from "../components/FormNewCustomer";
 import ConfirmationModal from "../components/ConfirmationModal";
 import Pagination from "@mui/material/Pagination";
-import { detailsAccountCustomer } from "../api/apiAccounts";
 
 export default function Home() {
   const [data, setData] = React.useState([]);

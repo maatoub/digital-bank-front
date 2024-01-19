@@ -13,9 +13,21 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import TextField from "@mui/material/TextField";
+import { Link } from "react-router-dom";
 
 const pages = ["Customers", "Accounts", "Operations"];
-const operations = ["Debit", "Credit", "Transfer"];
+const accounts = [
+  {
+    id: 1,
+    title: "New Account",
+    link: "/accounts/add",
+  },
+  {
+    id: 2,
+    title: "Consulter",
+    link: "/accounts/consulter",
+  },
+];
 const settings = ["Profile", "Logout"];
 function Header() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -82,9 +94,12 @@ function Header() {
               open={Boolean(anchorElOps)}
               onClose={handleCloseOpsMenu}
             >
-              {operations.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseOpsMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+              {accounts.map((acc) => (
+                <MenuItem key={acc.id} onClick={handleCloseOpsMenu}>
+                  <Typography textAlign="center">
+                    <Link to={acc.link}>{acc.title}</Link>
+                    {console.log(acc.link)}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -102,30 +117,13 @@ function Header() {
             </IconButton>
           </Box>
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            Bank
-          </Typography>
+
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
                 key={page}
                 onClick={
-                  page === "Operations" ? handleOpenOpsMenu : handleCloseNavMenu
+                  page === "Accounts" ? handleOpenOpsMenu : handleCloseNavMenu
                 }
                 sx={{ my: 2, color: "white", display: "block" }}
               >
