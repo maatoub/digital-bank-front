@@ -1,5 +1,7 @@
 import React from "react";
-import { saveSavingAccount } from "../api/api-accounts";
+import { saveCurrentAccount, saveSavingAccount } from "../api/api-accounts";
+import { getListOfCustomers } from "../api/api-customer";
+import { Toaster, toast } from "sonner";
 
 export const AddAccount = () => {
   const [savingAccChecked, setSavingAccChecked] = React.useState(true);
@@ -9,29 +11,59 @@ export const AddAccount = () => {
   const [balance, setBalance] = React.useState("");
   const [overDraft, setOverDraft] = React.useState("");
   const [interestRate, setInterestRate] = React.useState("");
-  const [accounts, setAccounts] = React.useState([]);
+  const [customers, setCustomers] = React.useState([]);
+
+  React.useEffect(() => {
+    getListOfCustomers()
+      .then((res) => setCustomers(res.data))
+      .catch((err) => console.error(err.message));
+  }, []);
 
   const handleSaveOrUpdateCustomer = (e) => {
     e.preventDefault();
     if (savingAccChecked) {
-      console.log("Saving-account", savingAccChecked);
-
-      const newAccount = {
-        balance,
-        overDraft,
-        selectedStatus,
-        selectedCustomer,
+      const newSavingAccount = {
+        balance: balance,
+        interestRate: interestRate,
+        status: selectedStatus,
+        customerDto: {
+          id: selectedCustomer,
+        },
       };
-      saveSavingAccount(newAccount)
-        .then((res) => setAccounts(res.data))
-        .catch((err) => console.log(err));
+      saveSavingAccount(newSavingAccount)
+        .then()
+        .catch((err) => {
+          console.log(err);
+          toast.error(err);
+        });
+      initializeInputs();
     } else {
-      console.log("Current-account", currentAccChecked);
+      const newCurrentAccount = {
+        balance: balance,
+        status: selectedStatus,
+        overDraft: overDraft,
+        customerDto: {
+          id: selectedCustomer,
+        },
+      };
+      saveCurrentAccount(newCurrentAccount)
+        .then()
+        .catch((err) => console.log(err));
+      initializeInputs();
     }
+  };
+
+  const initializeInputs = () => {
+    setBalance("");
+    setInterestRate("");
+    setSelectedStatus("");
+    setSelectedCustomer("");
+    setOverDraft("");
   };
   return (
     <div className="flex justify-center items-center h-screen">
-      <div className="w-1/2  rounded-2xl bg-black">
+      <Toaster position="top-right" />
+      <div className=" w-1/2  rounded-2xl bg-black">
         <form method="post" onSubmit={handleSaveOrUpdateCustomer}>
           <div className="flex flex-col gap-2 p-8">
             <p className="text-center text-3xl text-gray-300 mb-4">
@@ -85,9 +117,12 @@ export const AddAccount = () => {
                   value={selectedCustomer}
                   onChange={(e) => setSelectedCustomer(e.target.value)}
                 >
-                  <option value="1">Choose a customer</option>
-                  <option value="US">United States</option>
-                  <option value="CA">Canada</option>
+                  <option value="">Choose customer</option>
+                  {customers.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -97,7 +132,7 @@ export const AddAccount = () => {
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
                 >
-                  <option value="1">Choose a status account</option>
+                  <option value="">Choose a status account</option>
                   <option value="CREATED">CREATED</option>
                   <option value="UPDATED">UPDATED</option>
                   <option value="REMOVED">REMOVED</option>
@@ -116,19 +151,19 @@ export const AddAccount = () => {
               {savingAccChecked ? (
                 <input
                   className="bg-slate-900 lg:mt-4  w-full text-white rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 focus:ring-offset-gray-800"
-                  placeholder="Over draft"
+                  placeholder="Interest Rate"
                   type="text"
-                  value={overDraft}
-                  onChange={(e) => setOverDraft(e.target.value)}
+                  value={interestRate}
+                  onChange={(e) => setInterestRate(e.target.value)}
                   required
                 />
               ) : (
                 <input
                   className="bg-slate-900 lg:mt-4  w-full text-white rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 focus:ring-offset-gray-800"
-                  placeholder="Interest Rate"
+                  placeholder="Over draft"
                   type="text"
-                  value={interestRate}
-                  onChange={(e) => setInterestRate(e.target.value)}
+                  value={overDraft}
+                  onChange={(e) => setOverDraft(e.target.value)}
                   required
                 />
               )}

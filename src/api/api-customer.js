@@ -8,6 +8,10 @@ export const getAllCustomers = () => {
   return api.get(`/accounts`);
 };
 
+export const getListOfCustomers = () => {
+  return api.get("/");
+};
+
 export const saveCustomer = (customer) => {
   return api.post(`/save`, customer);
 };
@@ -18,5 +22,4 @@ export const deleteCustomer = (id) => {
 
 export const updateCustomer = (customer) => {
   return api.put(`/update/${customer.id}`, customer);
-}
-
+};

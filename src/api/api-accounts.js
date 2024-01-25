@@ -9,9 +9,9 @@ export const getAllAccounts = () => {
 };
 
 export const saveSavingAccount = (account) => {
-  return api.post("/sa/save", account);
+  return api.post("/sa", account);
 };
 
 export const saveCurrentAccount = (account) => {
-  return api.post("/ca/save", account);
+  return api.post("/ca", account);
 };
