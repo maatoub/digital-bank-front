@@ -14,14 +14,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { deleteCustomer, getAllCustomers } from "../api/api";
+import { deleteCustomer, getAllCustomers } from "../api/api-customer";
 import FormNewCustomer from "../components/FormNewCustomer";
 import ConfirmationModal from "../components/ConfirmationModal";
 import Pagination from "@mui/material/Pagination";
 
 export default function Home() {
   const [data, setData] = React.useState([]);
-  const [details, setDetails] = React.useState([]);
   const [expandedRow, setExpandedRow] = React.useState(null);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [customerToDelete, setCustomerToDelete] = React.useState(null);

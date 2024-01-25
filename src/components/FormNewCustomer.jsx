@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { saveCustomer, updateCustomer } from "../api/api";
+import { saveCustomer, updateCustomer } from "../api/api-customer";
 
 const FormNewCustomer = ({
   onSubmitCustomer,
