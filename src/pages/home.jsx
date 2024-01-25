@@ -266,7 +266,7 @@ export default function Home() {
           selectedCustomer={selectedCustomer}
           clearSelectedCustomer={clearSelectedCustomer}
         />
-      </div>
+      </div> 
       <ConfirmationModal
         open={modalOpen}
         onClose={cancelDelete}

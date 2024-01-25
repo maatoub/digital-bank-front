@@ -3,7 +3,8 @@ import "./App.css";
 import Header from "./components/Header";
 import Home from "./pages/home";
 import { AddAccount } from "./pages/AddAccount";
-import { AccountConsultation } from "./pages/AccountConsultation";
+import AccountConsultation from "./pages/AccountConsultation";
+
 function App() {
   return (
     <>

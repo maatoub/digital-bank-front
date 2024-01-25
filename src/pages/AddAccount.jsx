@@ -2,6 +2,10 @@ import React from "react";
 import { saveCurrentAccount, saveSavingAccount } from "../api/api-accounts";
 import { getListOfCustomers } from "../api/api-customer";
 import { Toaster, toast } from "sonner";
+import {
+  createNewCurrentAccount,
+  createNewSavingAccount,
+} from "../utils/AccountApiInterface";
 
 export const AddAccount = () => {
   const [savingAccChecked, setSavingAccChecked] = React.useState(true);
@@ -12,7 +16,16 @@ export const AddAccount = () => {
   const [overDraft, setOverDraft] = React.useState("");
   const [interestRate, setInterestRate] = React.useState("");
   const [customers, setCustomers] = React.useState([]);
-
+  const headTableAccounts = [
+    { id: "1", title: "RIB" },
+    { id: "2", title: "Type" },
+    { id: "3", title: "Created At"},
+    { id: "4", title: "Balance" },
+    { id: "5", title: "interest Rate" },
+    { id: "6", title: "OverDraft"},
+    { id: "7", title: "Customer"},
+    { id: "8", title: "Status"},
+  ];
   React.useEffect(() => {
     getListOfCustomers()
       .then((res) => setCustomers(res.data))
@@ -22,14 +35,12 @@ export const AddAccount = () => {
   const handleSaveOrUpdateCustomer = (e) => {
     e.preventDefault();
     if (savingAccChecked) {
-      const newSavingAccount = {
-        balance: balance,
-        interestRate: interestRate,
-        status: selectedStatus,
-        customerDto: {
-          id: selectedCustomer,
-        },
-      };
+      const newSavingAccount = createNewSavingAccount(
+        balance,
+        interestRate,
+        selectedStatus,
+        selectedCustomer
+      );
       saveSavingAccount(newSavingAccount)
         .then()
         .catch((err) => {
@@ -38,14 +49,12 @@ export const AddAccount = () => {
         });
       initializeInputs();
     } else {
-      const newCurrentAccount = {
-        balance: balance,
-        status: selectedStatus,
-        overDraft: overDraft,
-        customerDto: {
-          id: selectedCustomer,
-        },
-      };
+      const newCurrentAccount = createNewCurrentAccount(
+        balance,
+        overDraft,
+        selectedStatus,
+        selectedCustomer
+      );
       saveCurrentAccount(newCurrentAccount)
         .then()
         .catch((err) => console.log(err));
