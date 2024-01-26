@@ -8,6 +8,10 @@ export const getAllAccounts = () => {
   return api.get("/");
 };
 
+export const getAccount = (id) => {
+  return api.get(`/${id}`);
+};
+
 export const saveSavingAccount = (account) => {
   return api.post("/sa", account);
 };
