@@ -14,20 +14,8 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import TextField from "@mui/material/TextField";
 import { Link } from "react-router-dom";
+import { accounts, pages } from "../constants/Constants";
 
-const pages = ["Customers", "Accounts", "Operations"];
-const accounts = [
-  {
-    id: 1,
-    title: "New Account",
-    link: "/accounts/add",
-  },
-  {
-    id: 2,
-    title: "Consulter",
-    link: "/accounts/consulter",
-  },
-];
 const settings = ["Profile", "Logout"];
 function Header() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -98,7 +86,6 @@ function Header() {
                 <MenuItem key={acc.id} onClick={handleCloseOpsMenu}>
                   <Typography textAlign="center">
                     <Link to={acc.link}>{acc.title}</Link>
-                    {console.log(acc.link)}
                   </Typography>
                 </MenuItem>
               ))}
@@ -121,13 +108,13 @@ function Header() {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                key={page.id}
                 onClick={
-                  page === "Accounts" ? handleOpenOpsMenu : handleCloseNavMenu
+                  page.title === "Accounts" ? handleOpenOpsMenu : handleCloseNavMenu
                 }
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {page}
+                <Link to={page.link}>{page.title} </Link>
               </Button>
             ))}
           </Box>

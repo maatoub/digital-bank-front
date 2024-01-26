@@ -7,7 +7,6 @@ export const headTitles = [
   { id: "4", title: "Update" },
 ];
 
-export const pages = ["Customers", "Accounts", "Operations"];
 
 export const accounts = [
   {
@@ -30,4 +29,22 @@ export const headTableAccounts = [
   { id: "6", title: "OverDraft" },
   { id: "7", title: "Customer" },
   { id: "8", title: "Status" },
+];
+
+export const pages = [
+  {
+    id: 1,
+    title: "Customers",
+    link: "/",
+  },
+  {
+    id: 2,
+    title: "Accounts",
+    link: null,
+  },
+  {
+    id: 3,
+    title: "Operations",
+    link: "/operations",
+  },
 ];

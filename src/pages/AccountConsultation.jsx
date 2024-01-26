@@ -10,6 +10,8 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import { headTableAccounts } from "../constants/Constants";
+import { getAllAccounts } from "../api/api-accounts";
+import Pagination from "@mui/material/Pagination";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -31,29 +33,32 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
-
 export default function AccountConsultation() {
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [allAccounts, setAllAccounts] = useState([]);
 
+  React.useEffect(() => {
+    getAllAccounts()
+      .then((res) => setAllAccounts(res.data))
+      .catch((err) => console.error(err));
+  }, []);
   const handleSearch = (event) => {
     setSearch(event.target.value);
   };
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
-  const filteredRows = rows.filter((row) =>
-    row.name.toLowerCase().includes(search.toLowerCase())
+  const filteredRows = allAccounts.filter((row) =>
+    row.type.toLowerCase().includes(search.toLowerCase())
   );
-
+  /******** Pagination ******* */
+  const accountPerPage = 4  ;
+  const totalPages = Math.ceil(allAccounts.length / accountPerPage);
+  const indexOfLastAccount = accountPerPage * currentPage;
+  const indexOfFirstAccount = indexOfLastAccount - accountPerPage;
+  const accounts = allAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
   return (
     <div className="lg:mt-8 p-4">
       <TableContainer component={Paper}>
@@ -64,7 +69,10 @@ export default function AccountConsultation() {
           onChange={handleSearch}
           sx={{ borderColor: "black" }}
         />
-        <Table sx={{ minWidth: 600 }} aria-label="customized table">
+        <Table
+          sx={{ minWidth: 600, height: 400 }}
+          aria-label="customized table"
+        >
           <TableHead>
             <TableRow>
               <StyledTableCell>RIB</StyledTableCell>
@@ -76,20 +84,34 @@ export default function AccountConsultation() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredRows.map((row) => (
-              <StyledTableRow key={row.name}>
+            {accounts.map((row) => (
+              <StyledTableRow key={row.id}>
                 <StyledTableCell component="th" scope="row">
-                  {row.name}
+                  {row.id}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.calories}</StyledTableCell>
-                <StyledTableCell align="right">{row.fat}</StyledTableCell>
-                <StyledTableCell align="right">{row.carbs}</StyledTableCell>
-                <StyledTableCell align="right">{row.protein}</StyledTableCell>
+                <StyledTableCell align="right">{row.type}</StyledTableCell>
+                <StyledTableCell align="right">{row.createdAt}</StyledTableCell>
+                <StyledTableCell align="right">{row.balance}</StyledTableCell>
+                <StyledTableCell align="right">
+                  {row.interestRate}
+                </StyledTableCell>
+                <StyledTableCell align="right">{row.overDraft}</StyledTableCell>
+                <StyledTableCell align="right">
+                  {row.customerDto.id}
+                </StyledTableCell>
+                <StyledTableCell align="right">{row.status}</StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Pagination
+        className="p-4 flex items-center justify-center"
+        variant="outlined"
+        count={totalPages}
+        page={currentPage}
+        onChange={handlePageChange}
+      />
     </div>
   );
 }

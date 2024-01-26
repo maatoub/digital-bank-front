@@ -19,12 +19,12 @@ export const AddAccount = () => {
   const headTableAccounts = [
     { id: "1", title: "RIB" },
     { id: "2", title: "Type" },
-    { id: "3", title: "Created At"},
+    { id: "3", title: "Created At" },
     { id: "4", title: "Balance" },
     { id: "5", title: "interest Rate" },
-    { id: "6", title: "OverDraft"},
-    { id: "7", title: "Customer"},
-    { id: "8", title: "Status"},
+    { id: "6", title: "OverDraft" },
+    { id: "7", title: "Customer" },
+    { id: "8", title: "Status" },
   ];
   React.useEffect(() => {
     getListOfCustomers()
@@ -45,7 +45,7 @@ export const AddAccount = () => {
         .then()
         .catch((err) => {
           console.log(err);
-          toast.error(err);
+          toast.error(err.message);
         });
       initializeInputs();
     } else {
@@ -143,7 +143,7 @@ export const AddAccount = () => {
                 >
                   <option value="">Choose a status account</option>
                   <option value="CREATED">CREATED</option>
-                  <option value="UPDATED">UPDATED</option>
+                  <option value="UPDATED">ACTIVATED</option>
                   <option value="REMOVED">REMOVED</option>
                 </select>
               </div>

@@ -18,6 +18,7 @@ import { deleteCustomer, getAllCustomers } from "../api/api-customer";
 import FormNewCustomer from "../components/FormNewCustomer";
 import ConfirmationModal from "../components/ConfirmationModal";
 import Pagination from "@mui/material/Pagination";
+import { headTitles } from "../constants/Constants";
 
 export default function Home() {
   const [data, setData] = React.useState([]);
@@ -26,12 +27,7 @@ export default function Home() {
   const [customerToDelete, setCustomerToDelete] = React.useState(null);
   const [selectedCustomer, setSelectedCustomer] = React.useState(null);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const headTitles = [
-    { id: "1", title: "Name" },
-    { id: "2", title: "Email" },
-    { id: "3", title: "Deleted" },
-    { id: "4", title: "Update" },
-  ];
+
   /********    pagination    **** */
 
   const customerPerPage = 4;
