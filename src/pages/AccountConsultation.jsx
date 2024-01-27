@@ -8,7 +8,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import TextField from "@mui/material/TextField";
 import { headTableAccounts } from "../constants/Constants";
 import { getAllAccounts } from "../api/api-accounts";
 import Pagination from "@mui/material/Pagination";
@@ -34,7 +33,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function AccountConsultation() {
-  const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [allAccounts, setAllAccounts] = useState([]);
 
@@ -43,18 +41,12 @@ export default function AccountConsultation() {
       .then((res) => setAllAccounts(res.data))
       .catch((err) => console.error(err));
   }, []);
-  const handleSearch = (event) => {
-    setSearch(event.target.value);
-  };
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-  const filteredRows = allAccounts.filter((row) =>
-    row.type.toLowerCase().includes(search.toLowerCase())
-  );
   /******** Pagination ******* */
-  const accountPerPage = 4  ;
+  const accountPerPage = 4;
   const totalPages = Math.ceil(allAccounts.length / accountPerPage);
   const indexOfLastAccount = accountPerPage * currentPage;
   const indexOfFirstAccount = indexOfLastAccount - accountPerPage;
@@ -62,15 +54,8 @@ export default function AccountConsultation() {
   return (
     <div className="lg:mt-8 p-4">
       <TableContainer component={Paper}>
-        <TextField
-          id="search"
-          placeholder="Search"
-          value={search}
-          onChange={handleSearch}
-          sx={{ borderColor: "black" }}
-        />
         <Table
-          sx={{ minWidth: 600, height: 400 }}
+          sx={{ minWidth: 600, height: "auto" }}
           aria-label="customized table"
         >
           <TableHead>
@@ -89,6 +74,9 @@ export default function AccountConsultation() {
                 <StyledTableCell component="th" scope="row">
                   {row.id}
                 </StyledTableCell>
+                <StyledTableCell align="right">
+                  {row.customerDto.name}
+                </StyledTableCell>
                 <StyledTableCell align="right">{row.type}</StyledTableCell>
                 <StyledTableCell align="right">{row.createdAt}</StyledTableCell>
                 <StyledTableCell align="right">{row.balance}</StyledTableCell>
@@ -96,9 +84,6 @@ export default function AccountConsultation() {
                   {row.interestRate}
                 </StyledTableCell>
                 <StyledTableCell align="right">{row.overDraft}</StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.customerDto.id}
-                </StyledTableCell>
                 <StyledTableCell align="right">{row.status}</StyledTableCell>
               </StyledTableRow>
             ))}

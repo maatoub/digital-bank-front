@@ -56,7 +56,7 @@ const FormNewCustomer = ({
           </p>
           <input
             className="bg-slate-900 w-full text-white rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 focus:ring-offset-gray-800"
-            placeholder="name"
+            placeholder="Full name"
             type="text"
             value={name}
             onChange={(event) => {

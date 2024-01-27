@@ -164,7 +164,7 @@ export default function Home() {
                       <TableCell align="right">
                         <IconButton
                           aria-label="edit"
-                          color="success"
+                          color="primary"
                           size="small"
                           onClick={() =>
                             handleUpdateCustomer(row.customerDTO.id)
@@ -261,13 +261,13 @@ export default function Home() {
             className="p-4 flex items-center justify-center"
             count={totalPages}
             variant="outlined"
-            color="primary"
+            color="standard"
             page={currentPage}
             onChange={handlePageChange}
           />
         </div>
       ) : (
-        <Box sx={{ display: "flex" , justifyContent: "center"}}>
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
           <CircularProgress color="inherit" />
         </Box>
       )}

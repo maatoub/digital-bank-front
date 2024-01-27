@@ -6,6 +6,7 @@ import {
   createNewCurrentAccount,
   createNewSavingAccount,
 } from "../utils/AccountApiInterface";
+import Alert from "@mui/material/Alert";
 
 export const AddAccount = () => {
   const [savingAccChecked, setSavingAccChecked] = React.useState(true);
@@ -16,6 +17,7 @@ export const AddAccount = () => {
   const [overDraft, setOverDraft] = React.useState("");
   const [interestRate, setInterestRate] = React.useState("");
   const [customers, setCustomers] = React.useState([]);
+  const [alert, setAlert] = React.useState(false);
   const headTableAccounts = [
     { id: "1", title: "RIB" },
     { id: "2", title: "Type" },
@@ -32,36 +34,67 @@ export const AddAccount = () => {
       .catch((err) => console.error(err.message));
   }, []);
 
-  const handleSaveOrUpdateCustomer = (e) => {
-    e.preventDefault();
-    if (savingAccChecked) {
-      const newSavingAccount = createNewSavingAccount(
-        balance,
-        interestRate,
-        selectedStatus,
-        selectedCustomer
-      );
-      saveSavingAccount(newSavingAccount)
-        .then()
-        .catch((err) => {
-          console.log(err);
-          toast.error(err.message);
-        });
-      initializeInputs();
-    } else {
-      const newCurrentAccount = createNewCurrentAccount(
-        balance,
-        overDraft,
-        selectedStatus,
-        selectedCustomer
-      );
-      saveCurrentAccount(newCurrentAccount)
-        .then()
-        .catch((err) => console.log(err));
-      initializeInputs();
-    }
-  };
+  // const handleSaveAccount = (e) => {
+  //   e.preventDefault();
+  //   if (savingAccChecked) {
+  //     const newSavingAccount = createNewSavingAccount(
+  //       balance,
+  //       interestRate,
+  //       selectedStatus,
+  //       selectedCustomer
+  //     );
+  //     saveSavingAccount(newSavingAccount)
+  //       .then()
+  //       .catch((err) => {
+  //         console.log(err);
+  //         toast.error(err.message);
+  //       });
+  //     initializeInputs();
+  //   } else {
+  //     const newCurrentAccount = createNewCurrentAccount(
+  //       balance,
+  //       overDraft,
+  //       selectedStatus,
+  //       selectedCustomer
+  //     );
+  //     saveCurrentAccount(newCurrentAccount)
+  //       .then()
+  //       .catch((err) => console.log(err));
+  //     initializeInputs();
+  //   }
+  // };
 
+  const handleSaveAccount = async (e) => {
+    e.preventDefault();
+
+    try {
+      let newAccount;
+      if (savingAccChecked) {
+        newAccount = createNewSavingAccount(
+          balance,
+          interestRate,
+          selectedStatus,
+          selectedCustomer
+        );
+        await saveSavingAccount(newAccount);
+      } else {
+        newAccount = createNewCurrentAccount(
+          balance,
+          overDraft,
+          selectedStatus,
+          selectedCustomer
+        );
+        await saveCurrentAccount(newAccount);
+      }
+    } catch {
+      toast.error(err.message);
+    }
+    setAlert(true);
+    initializeInputs();
+    setTimeout(() => {
+      setAlert(false);
+    }, 2000);
+  };
   const initializeInputs = () => {
     setBalance("");
     setInterestRate("");
@@ -72,8 +105,10 @@ export const AddAccount = () => {
   return (
     <div className="flex justify-center items-center h-screen">
       <Toaster position="top-right" />
+
       <div className=" w-1/2  rounded-2xl bg-black">
-        <form method="post" onSubmit={handleSaveOrUpdateCustomer}>
+        {alert && (<Alert className="p-2">Account Added with success</Alert>)}
+        <form method="post" onSubmit={handleSaveAccount}>
           <div className="flex flex-col gap-2 p-8">
             <p className="text-center text-3xl text-gray-300 mb-4">
               Add Account

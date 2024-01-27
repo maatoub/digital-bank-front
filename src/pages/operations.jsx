@@ -5,6 +5,7 @@ import { getAccount } from "../api/api-accounts";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import FilledInput from "@mui/material/FilledInput";
+import Alert from "@mui/material/Alert";
 import InputAdornment from "@mui/material/InputAdornment";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -28,6 +29,7 @@ const Operations = () => {
   const [search, setSearch] = React.useState("");
   const [account, setAccount] = React.useState(null);
   const [checked, setChecked] = React.useState("");
+  const [alert, setAlert] = React.useState(false);
   const [champs, setChamps] = React.useState({
     balance: "",
     ribDst: "",
@@ -56,58 +58,72 @@ const Operations = () => {
       [e.target.id]: e.target.value,
     });
   };
-
-  const handleSaveOperation = (e) => {
+  const handleSaveOperation = async (e) => {
     e.preventDefault();
 
-    switch (checked) {
-      case "debit":
-        const debit = OpDebitCreditInterface(
-          account.id,
-          champs.balance,
-          champs.motif
-        );
-        debitOperation(debit)
-          .then()
-          .catch((err) => toast.error(err.message));
-        break;
-      case "credit":
-        const credit = OpDebitCreditInterface(
-          account.id,
-          champs.balance,
-          champs.motif
-        );
+    try {
+      let operationData;
+      switch (checked) {
+        case "debit":
+          operationData = OpDebitCreditInterface(
+            account.id,
+            champs.balance,
+            champs.motif
+          );
+          await debitOperation(operationData);
+          break;
+        case "credit":
+          operationData = OpDebitCreditInterface(
+            account.id,
+            champs.balance,
+            champs.motif
+          );
+          await creditOperation(operationData);
+          break;
+        case "transfer":
+          operationData = OpTransferInterface(
+            account.id,
+            champs.ribDst,
+            champs.balance,
+            champs.motif
+          );
+          await transferOperation(operationData);
+          break;
+        default:
+          toast.info("Choose type of operation");
+          return;
+      }
 
-        creditOperation(credit)
-          .then()
-          .catch((err) => toast.error(err.message));
-        break;
-      case "transfer":
-        const transfer = OpTransferInterface(
-          account.id,
-          champs.ribDst,
-          champs.balance,
-          champs.motif
-        );
-        transferOperation(transfer)
-          .then()
-          .catch((err) => toast.error(err.message));
-        break;
-      default:
-        toast.info("choose type of operation");
-        break;
+      setAlert(true);
+      await updateAccountInfo();
+      setChamps({
+        balance: "",
+        ribDst: "",
+        motif: "",
+      });
+
+      setTimeout(() => {
+        setAlert(false);
+      }, 4000);
+    } catch (err) {
+      toast.error(err.message);
     }
-
-    setChamps({
-      balance: "",
-      ribDst: "",
-      motif: "",
-    });
   };
 
+  const updateAccountInfo = () => {
+    getAccount(account.id)
+      .then((res) => {
+        setAccount(res.data);
+      })
+      .catch(() => {
+        setAccount(null);
+        toast.info("Account not found.");
+      });
+  };
   return (
     <div>
       <Toaster position="top-right" />
+
       <form
         onSubmit={handleSearchAccount}
         className="grid justify-center items-center lg:mt-8"
@@ -127,40 +143,59 @@ const Operations = () => {
           />
         </Box>
       </form>
-
       {account && (
         <div className="grid lg:grid-cols-2 lg:mt-8 p-4">
           <div className="max-w-lg bg-black text-white shadow-md rounded-md overflow-hidden">
             <h2 className="text-xl font-bold mb-2 lg:p-2"> + Compte details</h2>
-            <Divider variant="middle" />
+            <Divider variant="middle" color="white" />
             <div className="p-6 flex justify-between ">
               <div>
                 <Avatar
                   src="/broken-image.jpg"
                   sx={{ width: 80, height: 80 }}
                 />
-                <div className="lg:mt-6 font-semibold">
-                  <h2 className="text-xl font-semibold mb-2">
+                <div className="lg:mt-6 font-semibold ">
+                  <h2 className="text-2xl text-blue-500 font-bold mb-2">
                     {account.customerDto.name}
                   </h2>
-                  <p className="text-gray-600 mb-2 ">RIB : {account.id} </p>
-                  <p className="text-gray-600 mb-2">
-                    CREATED AT : {account.createdAt}
-                  </p>
-                  <p className="text-gray-600 mb-2">
-                    STATUS : {account.status}
-                  </p>
+                  <Divider variant="fullWidth" color="white" />
+                  <div className="mt-2">
+                    <label className="text-blue-500 mb-2">RIB : </label>
+                    <span className="text-white mb-2">{account.id}</span>
+                  </div>
+                  <div className="mt-2">
+                    <label className="text-blue-500 mb-2">CREATED AT : </label>
+                    <span className="text-white mb-2">{account.createdAt}</span>
+                  </div>
+                  <div className="mt-2">
+                    <label className="text-blue-500 mb-2">STATUS : </label>
+                    <span className="text-white mb-2">{account.status}</span>
+                  </div>
                 </div>
               </div>
-              <div className="font-semibold">
-                <p className="text-gray-600 mb-2">{account.balance} DH</p>
-                <p className="text-gray-600 mb-2">{account.type}</p>
+              <div className="font-bold">
+                <p className="text-blue-500 mb-2">{account.balance} DH</p>
+                <p className="text-gray-400 mb-2">{account.type}</p>
               </div>
             </div>
           </div>
-          {/**************** add operation  ****** */}
-          <div className="lg:p-6 bg-gray-200 rounded-2xl">
-            <form onSubmit={handleSaveOperation}>
+
+          {/**************** add operation  ************ */}
+
+          <div>
+            {alert && (
+              <Alert
+                className="mb-2 rounded-2xl"
+                variant="filled"
+                severity="success"
+              >
+                Operation was successful.
+              </Alert>
+            )}
+            <form
+              className="lg:p-6 bg-gray-200 rounded-2xl"
+              onSubmit={handleSaveOperation}
+            >
               <FormLabel id="demo-row-radio-buttons-group-label">
                 Operation
               </FormLabel>
@@ -178,7 +213,7 @@ const Operations = () => {
                 <FormControlLabel
                   value="credit"
                   control={<Radio />}
-                  label="Credit"  
+                  label="Credit"
                 />
                 <FormControlLabel
                   value="transfer"
@@ -229,7 +264,7 @@ const Operations = () => {
                   sx={{
                     mt: 2,
                     backgroundColor: "black",
-                    "&:hover": { backgroundColor: "darkslategray" },
+                    "&:hover": { backgroundColor: "primary" },
                   }}
                 >
                   Save

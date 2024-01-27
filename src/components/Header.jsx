@@ -49,11 +49,11 @@ function Header() {
       <Container maxWidth="xl" className="bg-black">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+
           <Typography
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -64,7 +64,7 @@ function Header() {
               textDecoration: "none",
             }}
           >
-            Bank
+            <Link to={"/"}> Bank</Link>
           </Typography>
           <Box>
             <Menu
@@ -110,32 +110,15 @@ function Header() {
               <Button
                 key={page.id}
                 onClick={
-                  page.title === "Accounts" ? handleOpenOpsMenu : handleCloseNavMenu
+                  page.title === "Accounts"
+                    ? handleOpenOpsMenu
+                    : handleCloseNavMenu
                 }
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 <Link to={page.link}>{page.title} </Link>
               </Button>
             ))}
-          </Box>
-          <Box sx={{ flexGrow: 1 }}>
-            {" "}
-            <TextField
-              id="outlined-search"
-              label="Search field"
-              type="search"
-              size="small"
-              InputLabelProps={{
-                style: { color: "white" },
-              }}
-              variant="outlined"
-              InputProps={{
-                style: {
-                  color: "white",
-                  borderColor: "white",
-                },
-              }}
-            />
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
