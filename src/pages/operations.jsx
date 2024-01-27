@@ -13,42 +13,101 @@ import FormLabel from "@mui/material/FormLabel";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import Divider from "@mui/material/Divider";
-import { debitOperation } from "../api/api-operation";
-import { OpDebitInterface } from "../utils/OperationApiInterface";
+import {
+  creditOperation,
+  debitOperation,
+  transferOperation,
+} from "../api/api-operation";
+import {
+  OpDebitCreditInterface,
+  OpTransferInterface,
+} from "../utils/OperationApiInterface";
+import { Toaster, toast } from "sonner";
 
 const Operations = () => {
   const [search, setSearch] = React.useState("");
   const [account, setAccount] = React.useState(null);
   const [checked, setChecked] = React.useState("");
-  const handleSearchAccount = (e) => {
-    e.preventDefault();
-    getAccount(search)
-      .then((res) => setAccount(res.data))
-      .catch((err) => setAccount(null));
-  };
+  const [champs, setChamps] = React.useState({
+    balance: "",
+    ribDst: "",
+    motif: "",
+  });
 
   React.useEffect(() => {
     setSearch("");
   }, [account]);
 
-  console.log(account);
+  const handleSearchAccount = (e) => {
+    e.preventDefault();
+    getAccount(search)
+      .then((res) => {
+        setAccount(res.data);
+      })
+      .catch(() => {
+        setAccount(null);
+        toast.info("Account not found.");
+      });
+  };
 
-  switch (checked) {
-    case "debit":
-      const data = OpDebitInterface()
-      debitOperation().then().catch();
-      break;
-    case "credit":
-      console.log("credit");
-      break;
-    case "transfer":
-      console.log("transfer");
-      break;
-    default:
-      break;
-  }
+  const handleChangeChamps = (e) => {
+    setChamps({
+      ...champs,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  const handleSaveOperation = (e) => {
+    e.preventDefault();
+
+    switch (checked) {
+      case "debit":
+        const debit = OpDebitCreditInterface(
+          account.id,
+          champs.balance,
+          champs.motif
+        );
+        debitOperation(debit)
+          .then()
+          .catch((err) => toast.error(err.message));
+        break;
+      case "credit":
+        const credit = OpDebitCreditInterface(
+          account.id,
+          champs.balance,
+          champs.motif
+        );
+
+        creditOperation(credit)
+          .then()
+          .catch((err) => toast.error(err.message));
+        break;
+      case "transfer":
+        const transfer = OpTransferInterface(
+          account.id,
+          champs.ribDst,
+          champs.balance,
+          champs.motif
+        );
+        transferOperation(transfer)
+          .then()
+          .catch((err) => toast.error(err.message));
+        break;
+      default:
+        toast.info("choose type of operation");
+        break;
+    }
+
+    setChamps({
+      balance: "",
+      ribDst: "",
+      motif: "",
+    });
+  };
+
   return (
     <div>
+      <Toaster position="top-right" />
       <form
         onSubmit={handleSearchAccount}
         className="grid justify-center items-center lg:mt-8"
@@ -71,37 +130,37 @@ const Operations = () => {
 
       {account && (
         <div className="grid lg:grid-cols-2 lg:mt-8 p-4">
-          <div className="max-w-lg bg-gray-100 shadow-md rounded-md overflow-hidden">
+          <div className="max-w-lg bg-black text-white shadow-md rounded-md overflow-hidden">
             <h2 className="text-xl font-bold mb-2 lg:p-2"> + Compte details</h2>
             <Divider variant="middle" />
-            <div className="p-6 flex justify-between">
+            <div className="p-6 flex justify-between ">
               <div>
                 <Avatar
                   src="/broken-image.jpg"
                   sx={{ width: 80, height: 80 }}
                 />
-                <div className="lg:mt-6">
+                <div className="lg:mt-6 font-semibold">
                   <h2 className="text-xl font-semibold mb-2">
                     {account.customerDto.name}
                   </h2>
-                  <p className="text-gray-600 mb-2">RIB : {account.id}</p>
+                  <p className="text-gray-600 mb-2 ">RIB : {account.id} </p>
                   <p className="text-gray-600 mb-2">
-                    Date : {account.createdAt}
+                    CREATED AT : {account.createdAt}
                   </p>
-                  <p className="text-gray-600 mb-2">Type : {account.type}</p>
+                  <p className="text-gray-600 mb-2">
+                    STATUS : {account.status}
+                  </p>
                 </div>
               </div>
-              <div>
-                <p className="text-gray-600 mb-2">
-                  Balance : {account.balance}
-                </p>
-                <p className="text-gray-600 mb-2">Status : {account.status}</p>
+              <div className="font-semibold">
+                <p className="text-gray-600 mb-2">{account.balance} DH</p>
+                <p className="text-gray-600 mb-2">{account.type}</p>
               </div>
             </div>
           </div>
-
-          <div className="lg:p-6">
-            <form>
+          {/**************** add operation  ****** */}
+          <div className="lg:p-6 bg-gray-200 rounded-2xl">
+            <form onSubmit={handleSaveOperation}>
               <FormLabel id="demo-row-radio-buttons-group-label">
                 Operation
               </FormLabel>
@@ -119,7 +178,7 @@ const Operations = () => {
                 <FormControlLabel
                   value="credit"
                   control={<Radio />}
-                  label="Credit"
+                  label="Credit"  
                 />
                 <FormControlLabel
                   value="transfer"
@@ -133,7 +192,9 @@ const Operations = () => {
                   Amount
                 </InputLabel>
                 <FilledInput
-                  id="filled-adornment-amount"
+                  id="balance"
+                  value={champs.balance}
+                  onChange={handleChangeChamps}
                   startAdornment={
                     <InputAdornment position="start">$</InputAdornment>
                   }
@@ -143,7 +204,9 @@ const Operations = () => {
                   <TextField
                     fullWidth
                     label="rib"
-                    id="rib"
+                    id="ribDst"
+                    value={champs.ribDst}
+                    onChange={handleChangeChamps}
                     sx={{
                       mt: 2,
                       "& .MuiInputBase-root.Mui-focused": {
@@ -152,8 +215,16 @@ const Operations = () => {
                     }}
                   />
                 ) : null}
-                <TextField fullWidth label="motif" id="motif" sx={{ mt: 2 }} />
+                <TextField
+                  fullWidth
+                  label="motif"
+                  id="motif"
+                  value={champs.motif}
+                  onChange={handleChangeChamps}
+                  sx={{ mt: 2 }}
+                />
                 <Button
+                  type="submit"
                   variant="contained"
                   sx={{
                     mt: 2,
@@ -161,7 +232,7 @@ const Operations = () => {
                     "&:hover": { backgroundColor: "darkslategray" },
                   }}
                 >
-                  Contained
+                  Save
                 </Button>
               </FormControl>
             </form>

@@ -10,6 +10,7 @@ import Paper from "@mui/material/Paper";
 import Collapse from "@mui/material/Collapse";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -89,180 +90,194 @@ export default function Home() {
 
   return (
     <div className="lg:mx-14 lg:grid lg:grid-cols-2 lg:gap-8 items-center h-screen">
-      <div>
-        <TableContainer
-          component={Paper}
-          sx={{ bgcolor: "black", maxHeight: "400px" }}
-        >
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableRow sx={{ color: "white" }}>
-                <TableCell />
-                <TableCell sx={{ color: "white" }}>Id</TableCell>
-                {headTitles.map((item) => (
-                  <TableCell
-                    key={item.id}
-                    align="right"
-                    sx={{ color: "white" }}
-                  >
-                    {item.title}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {currentCustomer.map((row) => (
-                <React.Fragment key={row.customerDTO.id}>
-                  <TableRow
-                    sx={{
-                      "&:last-child td, &:last-child th": {
-                        border: 0,
-                        color: "white",
-                      },
-                    }}
-                  >
-                    <TableCell>
-                      <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => handleRowClick(row.customerDTO.id)}
-                      >
-                        {expandedRow === row.customerDTO.id ? (
-                          <KeyboardArrowUpIcon />
-                        ) : (
-                          <KeyboardArrowDownIcon />
-                        )}
-                      </IconButton>
-                    </TableCell>
+      {currentCustomer.length > 0 ? (
+        <div>
+          <TableContainer
+            component={Paper}
+            sx={{ bgcolor: "black", maxHeight: "400px" }}
+          >
+            <Table aria-label="simple table">
+              <TableHead>
+                <TableRow sx={{ color: "white" }}>
+                  <TableCell />
+                  <TableCell sx={{ color: "white" }}>Id</TableCell>
+                  {headTitles.map((item) => (
                     <TableCell
-                      component="th"
-                      scope="row"
+                      key={item.id}
+                      align="right"
                       sx={{ color: "white" }}
                     >
-                      {row.customerDTO.id}
+                      {item.title}
                     </TableCell>
-                    <TableCell align="right" sx={{ color: "white" }}>
-                      {row.customerDTO.name}
-                    </TableCell>
-                    <TableCell align="right" sx={{ color: "white" }}>
-                      {row.customerDTO.email}
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        aria-label="delete"
-                        color="error"
-                        onClick={() => handleDeleteCustomer(row.customerDTO.id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-
-                    <TableCell align="right">
-                      <IconButton
-                        aria-label="edit"
-                        color="success"
-                        size="small"
-                        onClick={() => handleUpdateCustomer(row.customerDTO.id)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                  {/* ***************** Row details  ************* */}
-                  <TableRow>
-                    <TableCell
-                      style={{ paddingBottom: 0, paddingTop: 0 }}
-                      colSpan={6}
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {currentCustomer.map((row) => (
+                  <React.Fragment key={row.customerDTO.id}>
+                    <TableRow
+                      sx={{
+                        "&:last-child td, &:last-child th": {
+                          border: 0,
+                          color: "white",
+                        },
+                      }}
                     >
-                      <Collapse
-                        in={expandedRow === row.customerDTO.id}
-                        timeout="auto"
-                        unmountOnExit
+                      <TableCell>
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={() => handleRowClick(row.customerDTO.id)}
+                        >
+                          {expandedRow === row.customerDTO.id ? (
+                            <KeyboardArrowUpIcon />
+                          ) : (
+                            <KeyboardArrowDownIcon />
+                          )}
+                        </IconButton>
+                      </TableCell>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ color: "white" }}
                       >
-                        <Box sx={{ margin: 1 }}>
-                          <Typography variant="h6" gutterBottom component="div">
-                            Details
-                          </Typography>
-                          <Table size="small" aria-label="more details table">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell sx={{ color: "white" }}>
-                                  Date
-                                </TableCell>
-                                <TableCell
-                                  align="right"
-                                  sx={{ color: "white" }}
-                                >
-                                  RIB
-                                </TableCell>
-                                <TableCell
-                                  align="right"
-                                  sx={{ color: "white" }}
-                                >
-                                  Status{" "}
-                                </TableCell>
-                                <TableCell
-                                  align="right"
-                                  sx={{ color: "white" }}
-                                >
-                                  Type
-                                </TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {row.accountsDto.map((account) => (
-                                <TableRow key={account.id}>
+                        {row.customerDTO.id}
+                      </TableCell>
+                      <TableCell align="right" sx={{ color: "white" }}>
+                        {row.customerDTO.name}
+                      </TableCell>
+                      <TableCell align="right" sx={{ color: "white" }}>
+                        {row.customerDTO.email}
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          aria-label="delete"
+                          color="error"
+                          onClick={() =>
+                            handleDeleteCustomer(row.customerDTO.id)
+                          }
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+
+                      <TableCell align="right">
+                        <IconButton
+                          aria-label="edit"
+                          color="success"
+                          size="small"
+                          onClick={() =>
+                            handleUpdateCustomer(row.customerDTO.id)
+                          }
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                    {/* ***************** Row details  ************* */}
+                    <TableRow>
+                      <TableCell
+                        style={{ paddingBottom: 0, paddingTop: 0 }}
+                        colSpan={6}
+                      >
+                        <Collapse
+                          in={expandedRow === row.customerDTO.id}
+                          timeout="auto"
+                          unmountOnExit
+                        >
+                          <Box sx={{ margin: 1 }}>
+                            <Typography
+                              variant="h6"
+                              gutterBottom
+                              component="div"
+                            >
+                              Details
+                            </Typography>
+                            <Table size="small" aria-label="more details table">
+                              <TableHead>
+                                <TableRow>
                                   <TableCell sx={{ color: "white" }}>
-                                    {account.createdAt}
+                                    Date
                                   </TableCell>
                                   <TableCell
                                     align="right"
                                     sx={{ color: "white" }}
                                   >
-                                    {account.id}
+                                    RIB
                                   </TableCell>
                                   <TableCell
                                     align="right"
                                     sx={{ color: "white" }}
                                   >
-                                    {account.status}
+                                    Status{" "}
                                   </TableCell>
                                   <TableCell
                                     align="right"
                                     sx={{ color: "white" }}
                                   >
-                                    {account.type}
+                                    Type
                                   </TableCell>
-                                  *
                                 </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </Box>
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
-                </React.Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Pagination
-          className="p-4 flex items-center justify-center"
-          count={totalPages}
-          variant="outlined"
-          color="primary"
-          page={currentPage}
-          onChange={handlePageChange}
-        />
-      </div>
+                              </TableHead>
+                              <TableBody>
+                                {row.accountsDto.map((account) => (
+                                  <TableRow key={account.id}>
+                                    <TableCell sx={{ color: "white" }}>
+                                      {account.createdAt}
+                                    </TableCell>
+                                    <TableCell
+                                      align="right"
+                                      sx={{ color: "white" }}
+                                    >
+                                      {account.id}
+                                    </TableCell>
+                                    <TableCell
+                                      align="right"
+                                      sx={{ color: "white" }}
+                                    >
+                                      {account.status}
+                                    </TableCell>
+                                    <TableCell
+                                      align="right"
+                                      sx={{ color: "white" }}
+                                    >
+                                      {account.type}
+                                    </TableCell>
+                                    *
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Pagination
+            className="p-4 flex items-center justify-center"
+            count={totalPages}
+            variant="outlined"
+            color="primary"
+            page={currentPage}
+            onChange={handlePageChange}
+          />
+        </div>
+      ) : (
+        <Box sx={{ display: "flex" , justifyContent: "center"}}>
+          <CircularProgress color="inherit" />
+        </Box>
+      )}
       <div className="mx-auto lg:col-span-1 lg:col-start-2">
         <FormNewCustomer
           onSubmitCustomer={handleAllCustomers}
           selectedCustomer={selectedCustomer}
           clearSelectedCustomer={clearSelectedCustomer}
         />
-      </div> 
+      </div>
       <ConfirmationModal
         open={modalOpen}
         onClose={cancelDelete}
