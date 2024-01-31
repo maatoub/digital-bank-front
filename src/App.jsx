@@ -4,7 +4,7 @@ import Header from "./components/Header";
 import Home from "./pages/home";
 import { AddAccount } from "./pages/AddAccount";
 import AccountConsultation from "./pages/AccountConsultation";
-import Operations from "./pages/operations";
+import Operations from "./pages/Operations";
 
 function App() {
   return (
